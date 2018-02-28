@@ -14,3 +14,16 @@ Each member writes down answers to 3 questions:
 
 2018/02/28 Anita
 
+1. Done since last scrum:
+- created project plan
+- created database mockup
+- settingup the database
+- finish the description
+- setup the initial project
+- created the login, start and play windows
+
+2. Plan to do:
+- create the hero tank
+
+3. Need assistance / figure things out;
+- find out how to use canvas
