@@ -28,7 +28,7 @@ Each member writes down answers to 3 questions:
 3. Need assistance / figure things out;
 - find out how to use canvas
 ==========================================
-2018/02/28 Anita - Qian
+2018/02/29 Anita - Qian
 
 1. Done since last scrum:
 - drew hero tank for 4 directions
