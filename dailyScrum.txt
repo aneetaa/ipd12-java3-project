@@ -39,7 +39,7 @@ Each member writes down answers to 3 questions:
 2. Plan to do:
 - create map
 - create 2 player game (live)
-- intelligent moves
+- add/create game engine moves tank
 
 3. Need assistance / figure things out;
 - find out how to make the game live
