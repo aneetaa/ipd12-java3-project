@@ -41,7 +41,7 @@ Each member writes down answers to 3 questions:
 - create 2 player game (live)
 - add/create game engine moves tank
 
-3. Need assistance / figure things out;
+3. Need assistance / figure things out:
 - find out how to make the game live
 
 ==========================================
@@ -53,4 +53,10 @@ Each member writes down answers to 3 questions:
 - drew tank image by reading file
 - made enemies
 
-2. 
+2. Plan to do:
+- collision
+- finish map
+- make new tank models by paint
+
+3. Need assistance / figure things out:
+- 
