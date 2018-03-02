@@ -56,7 +56,9 @@ Each member writes down answers to 3 questions:
 2. Plan to do:
 - collision
 - finish map
-- make new tank models by paint
+- 2 player
+
 
 3. Need assistance / figure things out:
-- 
+- collision
+
