@@ -41,5 +41,34 @@ Each member writes down answers to 3 questions:
 - create 2 player game (live)
 - add/create game engine moves tank
 
-3. Need assistance / figure things out;
+3. Need assistance / figure things out:
 - find out how to make the game live
+
+==========================================
+2018/02/02 Anita - Qian
+
+1. Done since last scrum:
+- made JPanel, JFrame, User classes like the hero tank, enemy tank
+- moved the tanks
+- drew tank image by reading file
+- made enemies
+
+2. Plan to do:
+- collision
+- finish map
+- 2 player
+
+
+3. Need assistance / figure things out:
+- collision
+
+==========================================
+2018/02/03 Anita - Qian
+
+1. Done since last scrum:
+- collision/explosion
+- shooting
+- save scores/level
+- 
+
+2. Plan to do:
