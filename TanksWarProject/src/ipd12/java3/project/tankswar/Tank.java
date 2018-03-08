@@ -9,7 +9,7 @@ public class Tank {
     public Tank() {
     }
 
-    public Tank(int x, int y, int camp, int direction, int speed, boolean isAlive, boolean isCollision, List<Bullet> bullets) {
+    public Tank(int x, int y, int camp, int direction, int speed, boolean isAlive, boolean isCollision) {
         setX(x);
         setY(y);
         setCamp(camp);
@@ -17,27 +17,44 @@ public class Tank {
         setSpeed(speed);
         setIsAlive(isAlive);
         setCollision(isCollision);
-        setBullets(bullets);
+    }
+
+    public Tank(long id, int x, int y, int direction, int speed, int camp, boolean isAlive, boolean isCollision) {
+        setId(id);
+        setX(x);
+        setY(y);
+        setCamp(camp);
+        setDirection(direction);
+        setSpeed(speed);
+        setIsAlive(isAlive);
+        setCollision(isCollision);
     }
 
     public void shoot() {
-        //Initial position of bullet. new a bullet and add into List list
+        List<Bullet> bullets = GamePanel.bullets;
+        Bullet bullet;
         switch (getDirection()) {
-            case Setting.NORTH:
-                bullets.add(new Bullet(x + Setting.BLOODBATH_LONGITUDINAL_WIDTH / 2, y, Setting.NORTH, true, Setting.BULLET_SPEED));
+            case Settings.NORTH:
+                bullet = new Bullet(x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2, y, Settings.NORTH, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
+                bullets.add(bullet);
+                new Thread(bullet).start();
                 break;
-            case Setting.SOUTH:
-                bullets.add(new Bullet(x + Setting.BLOODBATH_LONGITUDINAL_WIDTH / 2, y + Setting.BLOODBATH_LONGITUDINAL_HEIGHT, Setting.SOUTH, true, Setting.BULLET_SPEED));
+            case Settings.SOUTH:
+                bullet = new Bullet(x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2, y + Settings.BLOODBATH_LONGITUDINAL_HEIGHT, Settings.SOUTH, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
+                bullets.add(bullet);
+                new Thread(bullet).start();
                 break;
-            case Setting.EAST:
-                bullets.add(new Bullet(x, y + Setting.BLOODBATH_HORIZONTAL_HEIGHT / 2, Setting.EAST, true, Setting.BULLET_SPEED));
+            case Settings.EAST:
+                bullet = new Bullet(x, y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2, Settings.EAST, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
+                bullets.add(bullet);
+                new Thread(bullet).start();
                 break;
-            case Setting.WEST:
-                bullets.add(new Bullet(x + Setting.BLOODBATH_HORIZONTAL_WIDTH, y + Setting.BLOODBATH_HORIZONTAL_HEIGHT / 2, Setting.WEST, true, Setting.BULLET_SPEED));
+            case Settings.WEST:
+                bullet = new Bullet(x + Settings.BLOODBATH_HORIZONTAL_WIDTH, y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2, Settings.WEST, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
+                bullets.add(bullet);
+                new Thread(bullet).start();
                 break;
         }
-        //Thread.Start of last bullet(new) in vector list
-        new Thread(bullets.get(bullets.size() - 1)).start();
     }
 
     // Collision between the tank
@@ -46,28 +63,28 @@ public class Tank {
         int anotherTankY = anotherTank.getY();
         int anotherTankDirection = anotherTank.getDirection();
         //tank
-        int tankLongitudinalWidth = Setting.BLOODBATH_LONGITUDINAL_WIDTH;
-        int tankLongitudinalHeight = Setting.BLOODBATH_LONGITUDINAL_HEIGHT;
-        int tankHorizontalWidth = Setting.BLOODBATH_HORIZONTAL_WIDTH;
-        int tankHorizontalHeight = Setting.BLOODBATH_HORIZONTAL_HEIGHT;
+        int tankLongitudinalWidth = Settings.BLOODBATH_LONGITUDINAL_WIDTH;
+        int tankLongitudinalHeight = Settings.BLOODBATH_LONGITUDINAL_HEIGHT;
+        int tankHorizontalWidth = Settings.BLOODBATH_HORIZONTAL_WIDTH;
+        int tankHorizontalHeight = Settings.BLOODBATH_HORIZONTAL_HEIGHT;
         //another
-        int anotherTankLongitudinalWidth = Setting.BLOODBATH_LONGITUDINAL_WIDTH;
-        int anotherTankLongitudinalHeight = Setting.BLOODBATH_LONGITUDINAL_HEIGHT;
-        int anotherTankHorizontalWidth = Setting.BLOODBATH_HORIZONTAL_WIDTH;
-        int anotherTankHorizontalHeight = Setting.BLOODBATH_HORIZONTAL_HEIGHT;
+        int anotherTankLongitudinalWidth = Settings.BLOODBATH_LONGITUDINAL_WIDTH;
+        int anotherTankLongitudinalHeight = Settings.BLOODBATH_LONGITUDINAL_HEIGHT;
+        int anotherTankHorizontalWidth = Settings.BLOODBATH_HORIZONTAL_WIDTH;
+        int anotherTankHorizontalHeight = Settings.BLOODBATH_HORIZONTAL_HEIGHT;
         Rectangle tankBounds;
         Rectangle anotherTankBounds;
         switch (direction) {
-            case Setting.NORTH:
-            case Setting.SOUTH:
-                if (anotherTankDirection == Setting.NORTH || anotherTankDirection == Setting.SOUTH) {
+            case Settings.NORTH:
+            case Settings.SOUTH:
+                if (anotherTankDirection == Settings.NORTH || anotherTankDirection == Settings.SOUTH) {
                     tankBounds = new Rectangle(x, y, tankLongitudinalWidth, tankLongitudinalHeight);
                     anotherTankBounds = new Rectangle(anotherTankX, anotherTankY, anotherTankLongitudinalWidth, anotherTankLongitudinalHeight);
                     if (tankBounds.intersects(anotherTankBounds)) {
                         return true;
                     }
                 }
-                if (anotherTankDirection == Setting.EAST || anotherTankDirection == Setting.WEST) {
+                if (anotherTankDirection == Settings.EAST || anotherTankDirection == Settings.WEST) {
                     tankBounds = new Rectangle(x, y, tankLongitudinalWidth, tankLongitudinalHeight);
                     anotherTankBounds = new Rectangle(anotherTankX, anotherTankY, anotherTankHorizontalWidth, anotherTankHorizontalHeight);
                     if (tankBounds.intersects(anotherTankBounds)) {
@@ -75,16 +92,16 @@ public class Tank {
                     }
                 }
                 break;
-            case Setting.EAST:
-            case Setting.WEST:
-                if (anotherTankDirection == Setting.NORTH || anotherTankDirection == Setting.SOUTH) {
+            case Settings.EAST:
+            case Settings.WEST:
+                if (anotherTankDirection == Settings.NORTH || anotherTankDirection == Settings.SOUTH) {
                     tankBounds = new Rectangle(x, y, tankHorizontalWidth, tankHorizontalHeight);
                     anotherTankBounds = new Rectangle(anotherTankX, anotherTankY, anotherTankLongitudinalWidth, anotherTankLongitudinalHeight);
                     if (tankBounds.intersects(anotherTankBounds)) {
                         return true;
                     }
                 }
-                if (anotherTankDirection == Setting.EAST || anotherTankDirection == Setting.WEST) {
+                if (anotherTankDirection == Settings.EAST || anotherTankDirection == Settings.WEST) {
                     tankBounds = new Rectangle(x, y, tankHorizontalWidth, tankHorizontalHeight);
                     anotherTankBounds = new Rectangle(anotherTankX, anotherTankY, anotherTankHorizontalWidth, anotherTankHorizontalHeight);
                     if (tankBounds.intersects(anotherTankBounds)) {
@@ -98,11 +115,11 @@ public class Tank {
 
     // Move up
     public void moveUp() {
-        if (y >= Setting.TOP_LEFT_CORNER_Y) {
+        if (y >= Settings.MAP_TOP_LEFT_CORNER_Y) {
             if (!isCollision()) {
                 setY(y - speed);
-            } else if (y <= Setting.LOWER_RIGHT_CORNER_Y - Setting.BLOODBATH_LONGITUDINAL_HEIGHT) {
-                //solve collision "sticking" 95%  and  5% sometimes in the corner sticker
+            } else if (y <= Settings.MAP_LOWER_RIGHT_CORNER_Y - Settings.BLOODBATH_LONGITUDINAL_HEIGHT) {
+                //solve collision "sticking" 95%  and in the corner sticker 5%
                 setY(y + speed);
             }
         }
@@ -110,10 +127,10 @@ public class Tank {
 
     // Move down
     public void moveDown() {
-        if (y <= Setting.LOWER_RIGHT_CORNER_Y - Setting.BLOODBATH_LONGITUDINAL_HEIGHT) {
+        if (y <= Settings.MAP_LOWER_RIGHT_CORNER_Y - Settings.BLOODBATH_LONGITUDINAL_HEIGHT) {
             if (!isCollision()) {
                 setY(y + speed);
-            } else if (y >= Setting.TOP_LEFT_CORNER_Y) {
+            } else if (y >= Settings.MAP_TOP_LEFT_CORNER_Y) {
                 setY(y - speed);
             }
         }
@@ -121,10 +138,10 @@ public class Tank {
 
     // Move left
     public void moveLeft() {
-        if (x >= Setting.TOP_LEFT_CORNER_X) {
+        if (x >= Settings.MAP_TOP_LEFT_CORNER_X) {
             if (!isCollision()) {
                 setX(x - speed);
-            } else if (x <= Setting.LOWER_RIGHT_CORNER_X - Setting.BLOODBATH_HORIZONTAL_WIDTH) {
+            } else if (x <= Settings.MAP_LOWER_RIGHT_CORNER_X - Settings.BLOODBATH_HORIZONTAL_WIDTH) {
                 setX(x + speed);
             }
 
@@ -133,10 +150,10 @@ public class Tank {
 
     // Move right
     public void moveRight() {
-        if (x <= Setting.LOWER_RIGHT_CORNER_X - Setting.BLOODBATH_HORIZONTAL_WIDTH) {
+        if (x <= Settings.MAP_LOWER_RIGHT_CORNER_X - Settings.BLOODBATH_HORIZONTAL_WIDTH) {
             if (!isCollision()) {
                 setX(x + speed);
-            } else if (x >= Setting.TOP_LEFT_CORNER_X) {
+            } else if (x >= Settings.MAP_TOP_LEFT_CORNER_X) {
                 setX(x - speed);
             }
             //  System.out.println(x + " " + y);
@@ -187,14 +204,6 @@ public class Tank {
         return collision;
     }
 
-    public List<Bullet> getBullets() {
-        return bullets;
-    }
-
-    public final void setBullets(List<Bullet> bullets) {
-        this.bullets = bullets;
-    }
-
     public final void setCollision(boolean collision) {
         this.collision = collision;
     }
@@ -206,6 +215,15 @@ public class Tank {
     public final void setCamp(int camp) {
         this.camp = camp;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public final void setId(long id) {
+        this.id = id;
+    }
+    private long id;
     private int x;
     private int y;
     private int direction;
@@ -213,5 +231,4 @@ public class Tank {
     private int camp;
     private boolean isAlive;
     private boolean collision;
-    private List<Bullet> bullets;
 }

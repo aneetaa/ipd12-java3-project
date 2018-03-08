@@ -1,0 +1,150 @@
+package ipd12.java3.project.tankswar;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+public class Database {
+
+    private static Connection dbConn;
+    private final static String URL = "jdbc:sqlite:C:\\Users\\gao32\\Desktop\\code\\javav.sqlite";
+
+    public Database() throws SQLException {
+        dbConn = DriverManager.getConnection(URL);
+        createTank();
+    }
+
+    public static void createTank() throws SQLException {
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS tanks (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "     x integer NOT NULL\n"
+                + "     y integer NOT NULL\n"
+                + "     direction integer NOT NULL\n"
+                + "     speed integer NOT NULL\n"
+                + "	camp integer NOT NULL,\n"
+                + "	isAlive text NOT NULL\n"
+                + "	isCollision text NOT NULL\n"
+                + ");";
+
+        try (Statement stmt = dbConn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+            System.out.println("Table established");
+
+        }
+    }
+
+    public static void createBullet() throws SQLException {
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS bullets (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "     x integer NOT NULL\n"
+                + "     y integer NOT NULL\n"
+                + "     direction integer NOT NULL\n"
+                + "     speed integer NOT NULL\n"
+                + "	camp integer NOT NULL,\n"
+                + "	isAlive text NOT NULL\n"
+                + ");";
+
+        try (Statement stmt = dbConn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+            System.out.println("Table established");
+
+        }
+    }
+
+    public ArrayList<Tank> getAllTanks() throws SQLException {
+        String sql = "SELECT * FROM bullets";
+        ArrayList<Tank> list = new ArrayList<>();
+        try (Statement statement = dbConn.createStatement()) {
+            ResultSet rs = statement.executeQuery(sql);
+            //Iterate through the java resultSet
+            while (rs.next()) {
+                Tank tank = new Tank();
+                tank.setId(rs.getInt("id"));
+                tank.setX(rs.getInt("x"));
+                tank.setY(rs.getInt("y"));
+                tank.setDirection(rs.getInt("direction"));
+                tank.setSpeed(rs.getInt("speed"));
+                tank.setCamp(rs.getInt("camp"));
+                tank.setIsAlive(rs.getBoolean("isAlive"));
+                tank.setCollision(rs.getBoolean("collision"));
+                list.add(tank);
+            }
+        }
+        return list;
+    }
+
+    public ArrayList<Bullet> getAllBullets() throws SQLException {
+        String sql = "SELECT * FROM bullets";
+        ArrayList<Bullet> list = new ArrayList<>();
+        try (Statement statement = dbConn.createStatement()) {
+            ResultSet rs = statement.executeQuery(sql);
+            //Iterate through the java resultSet
+            while (rs.next()) {
+                Bullet bullet = new Bullet();
+                bullet.setId(rs.getInt("id"));
+                bullet.setX(rs.getInt("x"));
+                bullet.setY(rs.getInt("y"));
+                bullet.setDirection(rs.getInt("direction"));
+                bullet.setSpeed(rs.getInt("speed"));
+                bullet.setCamp(rs.getInt("camp"));
+                bullet.setIsAlive(rs.getBoolean("isAlive"));
+                list.add(bullet);
+            }
+        }
+        return list;
+    }
+
+    public void addTank(Tank tank) throws SQLException {
+        String sql = "INSERT INTO tanks (x,y,direction,speed,camp,isAlive,collision)VALUES(?,?,?,?,?,?,?)";
+        try (PreparedStatement preparedStatement = dbConn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, tank.getX());
+            preparedStatement.setInt(2, tank.getY());
+            preparedStatement.setInt(3, tank.getDirection());
+            preparedStatement.setInt(4, tank.getSpeed());
+            preparedStatement.setInt(5, tank.getCamp());
+            preparedStatement.setBoolean(6, tank.isIsAlive());
+            preparedStatement.setBoolean(7, tank.isCollision());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void addBullet(Bullet bullet) throws SQLException {
+        String sql = "INSERT INTO bullets (x,y,direction,speed,camp,isAlive)VALUES(?,?,?,?,?,?)";
+        try (PreparedStatement preparedStatement = dbConn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, bullet.getX());
+            preparedStatement.setInt(2, bullet.getY());
+            preparedStatement.setInt(3, bullet.getDirection());
+            preparedStatement.setInt(4, bullet.getSpeed());
+            preparedStatement.setInt(5, bullet.getCamp());
+            preparedStatement.setBoolean(6, bullet.isIsAlive());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void deleteTanks() throws SQLException {
+        String sql = "TRUNCATE TABLE tanks;";
+        try (PreparedStatement preparedStatement = dbConn.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void deleteBullets() throws SQLException {
+        String sql = "TRUNCATE TABLE tanks;";
+        try (PreparedStatement preparedStatement = dbConn.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public Connection getDbConn() {
+        return dbConn;
+    }
+
+}

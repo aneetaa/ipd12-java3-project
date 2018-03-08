@@ -1,12 +1,10 @@
 package ipd12.java3.project.tankswar;
 
-import java.util.List;
-
 public class Hero extends Tank {
-   
-    public Hero(int x, int y, int camp, int direction, int speed, boolean isAlive, boolean isCollision, List<Bullet> bullets) {
-        super(x, y, camp, direction, speed, isAlive, isCollision, bullets);
-    } 
+
+    public Hero(int x, int y, int camp, int direction, int speed, boolean isAlive, boolean isCollision) {
+        super(x, y, camp, direction, speed, isAlive, isCollision);
+    }
 
     public String getPlayerName() {
         return playerName;
