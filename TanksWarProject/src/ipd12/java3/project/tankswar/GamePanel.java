@@ -21,7 +21,8 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
     public static List<Bullet> bullets;
     // List<Tank> tank;
     List<Decoration> decorations;
-    private BufferedImage imageBombOne,
+    private BufferedImage background,
+            imageBombOne,
             imageBombTwo,
             imageBombThree,
             imageBullet,
@@ -185,7 +186,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
-    // Draw the tank BloodBath
+    // Draw a tank
     public void drawTankBloodBath(Tank tank, Graphics g) {
         // Determine what type of tank
         int x = tank.getX();
@@ -241,8 +242,8 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
         }
         g.setColor(Color.black);
     }
+    // Draw a tank Nightmare
 
-    // Draw the tank Nightmare
     public void drawTankNightmare(Tank tank, Graphics g) {
         // Determine what type of tank
         int x = tank.getX();

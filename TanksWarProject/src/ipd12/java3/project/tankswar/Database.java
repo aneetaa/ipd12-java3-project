@@ -10,25 +10,27 @@ import java.util.ArrayList;
 
 public class Database {
 
-    private static Connection dbConn;
-    private final static String URL = "jdbc:sqlite:C:\\Users\\gao32\\Desktop\\code\\javav.sqlite";
+    public static Connection dbConn;
+
+    private final static String URL = "jdbc:sqlite:tankwar.sqlite";
 
     public Database() throws SQLException {
         dbConn = DriverManager.getConnection(URL);
-        createTank();
+        createTanks();
+        createBullets();
     }
 
-    public static void createTank() throws SQLException {
+    public static void createTanks() throws SQLException {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS tanks (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "     x integer NOT NULL\n"
-                + "     y integer NOT NULL\n"
-                + "     direction integer NOT NULL\n"
-                + "     speed integer NOT NULL\n"
-                + "	camp integer NOT NULL,\n"
-                + "	isAlive text NOT NULL\n"
-                + "	isCollision text NOT NULL\n"
+                + "	id INTEGER PRIMARY KEY,\n"
+                + "     x INTEGER NOT NULL,\n"
+                + "     y INTEGER NOT NULL,\n"
+                + "     direction INTEGER NOT NULL,\n"
+                + "     speed INTEGER NOT NULL,\n"
+                + "	camp INTEGER NOT NULL,\n"
+                + "	isAlive TEXT NOT NULL,\n"
+                + "	isCollision TEXT NOT NULL\n"
                 + ");";
 
         try (Statement stmt = dbConn.createStatement()) {
@@ -39,16 +41,16 @@ public class Database {
         }
     }
 
-    public static void createBullet() throws SQLException {
+    public static void createBullets() throws SQLException {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS bullets (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "     x integer NOT NULL\n"
-                + "     y integer NOT NULL\n"
-                + "     direction integer NOT NULL\n"
-                + "     speed integer NOT NULL\n"
-                + "	camp integer NOT NULL,\n"
-                + "	isAlive text NOT NULL\n"
+                + "	id INTEGER PRIMARY KEY,\n"
+                + "     x INTEGER NOT NULL,\n"
+                + "     y INTEGER NOT NULL,\n"
+                + "     direction INTEGER NOT NULL,\n"
+                + "     speed INTEGER NOT NULL,\n"
+                + "	camp INTEGER NOT NULL,\n"
+                + "	isAlive TEXT NOT NULL\n"
                 + ");";
 
         try (Statement stmt = dbConn.createStatement()) {
@@ -60,7 +62,7 @@ public class Database {
     }
 
     public ArrayList<Tank> getAllTanks() throws SQLException {
-        String sql = "SELECT * FROM bullets";
+        String sql = "SELECT * FROM tanks";
         ArrayList<Tank> list = new ArrayList<>();
         try (Statement statement = dbConn.createStatement()) {
             ResultSet rs = statement.executeQuery(sql);
@@ -74,7 +76,7 @@ public class Database {
                 tank.setSpeed(rs.getInt("speed"));
                 tank.setCamp(rs.getInt("camp"));
                 tank.setIsAlive(rs.getBoolean("isAlive"));
-                tank.setCollision(rs.getBoolean("collision"));
+                tank.setCollision(rs.getBoolean("isCollision"));
                 list.add(tank);
             }
         }
@@ -103,7 +105,7 @@ public class Database {
     }
 
     public void addTank(Tank tank) throws SQLException {
-        String sql = "INSERT INTO tanks (x,y,direction,speed,camp,isAlive,collision)VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO tanks (x,y,direction,speed,camp,isAlive,isCollision)VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = dbConn.prepareStatement(sql)) {
             preparedStatement.setInt(1, tank.getX());
             preparedStatement.setInt(2, tank.getY());
@@ -146,5 +148,4 @@ public class Database {
     public Connection getDbConn() {
         return dbConn;
     }
-
 }

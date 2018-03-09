@@ -14,7 +14,7 @@ public interface Settings {
     int MAP_TOP_LEFT_CORNER_X = 20;
     int MAP_LOWER_RIGHT_CORNER_X = MAP_WIDTH + MAP_TOP_LEFT_CORNER_X;
     int MAP_TOP_LEFT_CORNER_Y = 10;
-    int MAP_LOWER_zRIGHT_CORNER_Y = MAP_HEIGHT + MAP_TOP_LEFT_CORNER_Y;
+    int MAP_LOWER_RIGHT_CORNER_Y = MAP_HEIGHT + MAP_TOP_LEFT_CORNER_Y;
 
     //Direction of tank,bullet
     int NORTH = 0;

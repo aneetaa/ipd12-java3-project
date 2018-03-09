@@ -28,10 +28,10 @@ Each member writes down answers to 3 questions:
 3. Need assistance / figure things out;
 - find out how to use canvas
 ==========================================
-2018/02/29 Anita - Qian
+2018/03/01 Anita - Qian
 
 1. Done since last scrum:
-- drew hero tank for 4 directions
+- drew a hero tank for 4 directions
 - done moving tank with arrow keys
 - drew bombs
 - done shooting bullets 
@@ -45,7 +45,7 @@ Each member writes down answers to 3 questions:
 - find out how to make the game live
 
 ==========================================
-2018/02/02 Anita - Qian
+2018/03/02 Anita - Qian
 
 1. Done since last scrum:
 - made JPanel, JFrame, User classes like the hero tank, enemy tank
@@ -63,12 +63,72 @@ Each member writes down answers to 3 questions:
 - collision
 
 ==========================================
-2018/02/03 Anita - Qian
+2018/03/05 Anita - Qian
 
 1. Done since last scrum:
 - collision/explosion
 - shooting
 - save scores/level
-- 
+- made bomb
+
+2. Plan to do: 
+- map
+- second hero tank
+- 2 player game
+
+3. Need assistance / figure things out:
+- how to create map
+
+==========================================
+2018/03/06 Anita - Qian
+
+1. Done since last scrum:
+- second hero tank
+- 2 player game
 
 2. Plan to do:
+- create setthings window
+- map
+- save game
+- import saved game
+- networking game
+
+3. Need assistance / figure things out:
+- import
+- map
+
+==========================================
+2018/03/07 Anita - Qian
+
+1. Done since last scrum:
+- save game on database
+- set lives and bullets for players
+- done game! (working)
+- create setthings
+
+2. Plan to do:
+- map
+- import saved game
+- replay last game
+
+3. Need assistance / figure things out:
+- import
+- map
+- networking
+
+==========================================
+2018/03/08 Anita - Qian
+
+
+1. Done since last scrum:
+- finilize the project
+- prepare the presentation
+- practice the presentation
+
+2. Plan to do:
+- some changes in settings option
+- test the codefor the last time
+
+3. Need assistance / figure things out:
+- nothing new
+

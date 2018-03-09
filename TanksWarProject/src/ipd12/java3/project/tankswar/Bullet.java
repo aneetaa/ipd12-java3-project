@@ -64,10 +64,8 @@ public class Bullet implements Runnable {
 
     @Override
     public void run() {
-
         try {
             while (true) {
-                //eliminate thread
                 if (!isAlive) {
                     break;
                 }
@@ -86,7 +84,6 @@ public class Bullet implements Runnable {
                         setX(x + speed);
                         break;
                 }
-                // The bullet must be inseide The map
                 if (x > Settings.MAP_LOWER_RIGHT_CORNER_X
                         || x < Settings.MAP_TOP_LEFT_CORNER_X
                         || y > Settings.MAP_LOWER_RIGHT_CORNER_Y

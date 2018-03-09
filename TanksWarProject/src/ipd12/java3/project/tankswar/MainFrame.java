@@ -21,8 +21,10 @@ public class MainFrame extends javax.swing.JFrame {
             this.db = new Database();
             initComponents();
             setIcon();
-            menuFile.setMnemonic('G');
+            menuGame.setMnemonic('E');
             menuExit.setMnemonic('E');
+            menubarSetting.setMnemonic('S');
+            menuSettings.setMnemonic('S');
             f = new File("src\\res\\", "gamelog.csv");
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -71,13 +73,14 @@ public class MainFrame extends javax.swing.JFrame {
         lblTankWar = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        menuFile = new javax.swing.JMenu();
+        menuGame = new javax.swing.JMenu();
         menuSave = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
         menuExit = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        menubarSetting = new javax.swing.JMenu();
         menuSettings = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
 
         dlg.setTitle("Setting game");
         dlg.setLocationByPlatform(true);
@@ -275,39 +278,42 @@ public class MainFrame extends javax.swing.JFrame {
 
         getContentPane().add(pStart, java.awt.BorderLayout.CENTER);
 
-        menuFile.setText("Game");
+        menuGame.setText("Game");
 
-        menuSave.setText("Save&Exit");
+        menuSave.setText("Save");
         menuSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveActionPerformed(evt);
             }
         });
-        menuFile.add(menuSave);
-        menuFile.add(jSeparator1);
+        menuGame.add(menuSave);
+        menuGame.add(jSeparator1);
 
-        menuExit.setText("Exit");
+        jMenuItem1.setText("Replay");
+        menuGame.add(jMenuItem1);
+        menuGame.add(jSeparator2);
+
+        menuExit.setText("Exit(Alt+E)");
         menuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuExitActionPerformed(evt);
             }
         });
-        menuFile.add(menuExit);
+        menuGame.add(menuExit);
 
-        jMenuBar1.add(menuFile);
+        jMenuBar1.add(menuGame);
 
-        jMenu1.setText("Setting");
+        menubarSetting.setText("Setting");
 
-        menuSettings.setText("Settings");
+        menuSettings.setText("Settings(Alt+S)");
         menuSettings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSettingsActionPerformed(evt);
             }
         });
-        jMenu1.add(menuSettings);
-        jMenu1.add(jSeparator4);
+        menubarSetting.add(menuSettings);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(menubarSetting);
 
         setJMenuBar(jMenuBar1);
 
@@ -342,7 +348,25 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btStartGameActionPerformed
 
     private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveActionPerformed
-
+        try {
+            if (GamePanel.tanks.get(0).isIsAlive()) {
+                db.addTank(GamePanel.tanks.get(0));
+            }
+            if (GamePanel.tanks.get(1).isIsAlive()) {
+                db.addTank(GamePanel.tanks.get(1));
+            }
+            for (int i = 2; i < GamePanel.tanks.size(); i++) {
+                db.addTank(GamePanel.tanks.get(i));
+            }
+            for (Bullet bullet : GamePanel.bullets) {
+                db.addBullet(bullet);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error adding record: " + e.getMessage(),
+                    "Database error",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_menuSaveActionPerformed
 
     private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
@@ -386,6 +410,18 @@ public class MainFrame extends javax.swing.JFrame {
         dlg.pack();
         dlg.setVisible(true);
     }//GEN-LAST:event_menuSettingsActionPerformed
+
+    private void setIcon() {
+        try {
+            setIconImage(ImageIO.read(getClass().getResourceAsStream("/res//iconFrame.png")));
+        } catch (java.lang.NullPointerException | IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "The Icon can't find !" + e.getMessage(),
+                    "Error!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
 
     /**
      * @param args the command line arguments
@@ -448,27 +484,16 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField dlg_tfPlayer1Name;
     private javax.swing.JTextField dlg_tfPlayer2Name;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lblTankWar;
     private javax.swing.JMenuItem menuExit;
-    private javax.swing.JMenu menuFile;
+    private javax.swing.JMenu menuGame;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JMenuItem menuSettings;
+    private javax.swing.JMenu menubarSetting;
     private javax.swing.JPanel pStart;
     // End of variables declaration//GEN-END:variables
-
-    private void setIcon() {
-        try {
-            setIconImage(ImageIO.read(getClass().getResourceAsStream("/res//iconFrame.png")));
-        } catch (java.lang.NullPointerException | IOException e) {
-            JOptionPane.showMessageDialog(this,
-                    "The Icon can't find !" + e.getMessage(),
-                    "Error!",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-
-    }
 }
