@@ -64,44 +64,32 @@ public class Bullet implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                if (!isAlive) {
-                    break;
-                }
-                Thread.sleep(Settings.PAUSEFOR_50_MILLISECONDS);
-                switch (direction) {
-                    case Settings.NORTH:
-                        setY(y - speed);
-                        break;
-                    case Settings.SOUTH:
-                        setY(y + speed);
-                        break;
-                    case Settings.EAST:
-                        setX(x - speed);
-                        break;
-                    case Settings.WEST:
-                        setX(x + speed);
-                        break;
-                }
-                if (x > Settings.MAP_LOWER_RIGHT_CORNER_X
-                        || x < Settings.MAP_TOP_LEFT_CORNER_X
-                        || y > Settings.MAP_LOWER_RIGHT_CORNER_Y
-                        || y < Settings.MAP_TOP_LEFT_CORNER_Y) {
-                    setIsAlive(false);
-                }
+        while (true) {
+            if (!isAlive) {
+                break;
             }
-        } catch (InterruptedException ex) {
-            threadMessage("I wasn't done!");
+            Utils.delay(Settings.PAUSEFOR_50_MILLISECONDS);
+            switch (direction) {
+                case Settings.NORTH:
+                    setY(y - speed);
+                    break;
+                case Settings.SOUTH:
+                    setY(y + speed);
+                    break;
+                case Settings.EAST:
+                    setX(x - speed);
+                    break;
+                case Settings.WEST:
+                    setX(x + speed);
+                    break;
+            }
+            if (x > Settings.MAP_LOWER_RIGHT_CORNER_X
+                    || x < Settings.MAP_TOP_LEFT_CORNER_X
+                    || y > Settings.MAP_LOWER_RIGHT_CORNER_Y
+                    || y < Settings.MAP_TOP_LEFT_CORNER_Y) {
+                setIsAlive(false);
+            }
         }
-    }
-
-    public void threadMessage(String message) {
-        String threadName
-                = Thread.currentThread().getName();
-        System.out.format("%s: %s%n",
-                threadName,
-                message);
     }
 
     public int getX() {
@@ -140,7 +128,7 @@ public class Bullet implements Runnable {
         return isAlive;
     }
 
-    public final void setIsAlive(boolean isAlive) {
+    public final synchronized void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
     }
 
@@ -148,7 +136,7 @@ public class Bullet implements Runnable {
         return camp;
     }
 
-    public final void setCamp(int camp) {
+    public final synchronized void setCamp(int camp) {
         if (camp == Settings.CAMP_GREEN) {
             Record.firstPlayerShootCounter++;
         }
@@ -165,11 +153,13 @@ public class Bullet implements Runnable {
     public final void setId(long id) {
         this.id = id;
     }
-    private long id;
-    private int x;
-    private int y;
-    private int speed;
-    private int direction;
+    //To change a variable from another thread you either have to use volatile
+    //volatile is used to prevent threads cashing variables
+    private volatile long id;
+    private volatile int x;
+    private volatile int y;
+    private volatile int speed;
+    private volatile int direction;
     private boolean isAlive;
     private int camp;
 }

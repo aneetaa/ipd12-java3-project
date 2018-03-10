@@ -15,15 +15,22 @@ public class Record {
     }
 
     public static void addGradeCount() {
-        gradeCount++;
+        currentRecord++;
     }
 
-    static int enemyNumber = 5;
-    static int gradeCount = 0;
+    static int enemyNumber;
+    static int currentRecord = 0;
+    static int heightRecord = 0;
     static int secondPlayerHP = 3;
     static int firstPlayerHP = 3;
 
     static int firstPlayerShootCounter = 0;
     static int secondPlayerShootCounter = 0;
 
+    //settings
+    static int playerMode;
+    static int playerMoveSpeed;
+    static int playerBulletSpeed;
+    static String playerOneName;
+    static String playerTwoName;
 }

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,25 +17,24 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements KeyListener, Runnable {
 
-    // Definition your tank and bullet
-    public static List<Tank> tanks;
-    public static List<Bullet> bullets;
-    // List<Tank> tank;
-    List<Decoration> decorations;
-    private BufferedImage background,
-            imageBombOne,
-            imageBombTwo,
-            imageBombThree,
-            imageBullet,
-            imageTankNightmareNorth,
-            imageTankNightmareSouth,
-            imageTankNightmareEast,
-            imageTankNightmareWest;
-    private final Set<Integer> pressedKeyboard;
+    // Definition
+    //To change a variable from another thread you either have to use volatile
+    private static volatile Set<Integer> pressedKeyboard;
+    public static volatile List<Tank> tanks;
+    public static volatile List<Bullet> bullets;
+    private volatile List<Decoration> decorations;
+    private BufferedImage imageBombOne;
+    private BufferedImage imageBombTwo;
+    private BufferedImage imageBombThree;
+    private BufferedImage imageBullet;
+    private BufferedImage imageTankNightmareNorth;
+    private BufferedImage imageTankNightmareSouth;
+    private BufferedImage imageTankNightmareEast;
+    private BufferedImage imageTankNightmareWest;
 
     // Constructor
     public GamePanel() {
-        pressedKeyboard = new HashSet<>();
+        pressedKeyboard = Collections.synchronizedSet(new HashSet<>());
         tanks = Collections.synchronizedList(new ArrayList<>());
         bullets = Collections.synchronizedList(new ArrayList<>());
         decorations = Collections.synchronizedList(new ArrayList<>());
@@ -80,8 +80,8 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
             imageTankNightmareSouth = ImageIO.read(getClass().getResourceAsStream("/res//tankDown.png"));
             imageTankNightmareEast = ImageIO.read(getClass().getResourceAsStream("/res//tankLeft.png"));
             imageTankNightmareWest = ImageIO.read(getClass().getResourceAsStream("/res//tankRight.png"));
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Can't load file" + e.getMessage());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Can't load image file" + e.getMessage());
         }
     }
 
@@ -92,13 +92,13 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
         g.drawRect(Settings.MAP_TOP_LEFT_CORNER_X, Settings.MAP_TOP_LEFT_CORNER_Y, Settings.MAP_WIDTH, Settings.MAP_HEIGHT);
         // Draw the tanks
         for (int i = 0; i < tanks.size(); i++) {
-            if (!tanks.get(i).equals(null)
+            if (tanks.get(i) != null
                     && tanks.get(i).isIsAlive()) {
                 switch (i) {
-                    case Settings.FIRST_PlAYER:
+                    case Settings.PLAYER_ONE_CODE:
                         drawTankBloodBath(tanks.get(i), g);
                         break;
-                    case Settings.SECOND_PlAYER:
+                    case Settings.PLAYER_TWO_CODE:
                         drawTankNightmare(tanks.get(i), g);
                         break;
                     default:
@@ -109,7 +109,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
         }
         //Draw the bullets
         for (int i = 0; i < bullets.size(); i++) {
-            if (!bullets.get(i).equals(null)
+            if (bullets.get(i) != null
                     && bullets.get(i).isIsAlive()) {
                 g.fill3DRect(bullets.get(i).getX(),
                         bullets.get(i).getY(),
@@ -128,22 +128,27 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
     public void drawRcord(Graphics g) {
         Font f = new Font("Arial Narrow ", Font.BOLD, 15);
         g.setFont(f);
+        g.drawString(Record.playerOneName, 650, 80);
         drawRecordTank(640, 100, Settings.CAMP_GREEN, g);
         g.drawString(Record.firstPlayerHP + "", 670, 120);
         g.drawImage(imageBullet, 700, 110, 30, 16, this);
         g.drawString(Settings.PLAYER_TANK_MAXSHOOT_BULLETS - Record.firstPlayerShootCounter + "", 740, 120);
 
-        g.drawImage(imageTankNightmareNorth, 630, 190, 30, 50, this);
-        g.drawString(Record.secondPlayerHP + "", 670, 220);
-        g.drawImage(imageBullet, 700, 210, 30, 16, this);
-        g.drawString(Settings.PLAYER_TANK_MAXSHOOT_BULLETS - Record.secondPlayerShootCounter + "", 740, 220);
+        g.drawString(Record.playerTwoName, 650, 220);
+        g.drawImage(imageTankNightmareNorth, 630, 230, 30, 50, this);
+        g.drawString(Record.secondPlayerHP + "", 670, 260);
+        g.drawImage(imageBullet, 700, 250, 30, 16, this);
+        g.drawString(Settings.PLAYER_TANK_MAXSHOOT_BULLETS - Record.secondPlayerShootCounter + "", 740, 260);
 
-        drawRecordTank(660, 300, Settings.CAMP_GRAY, g);
-        g.drawString(Record.enemyNumber + "", 700, 320);
+        g.drawString("Enemies", 650, 340);
+        drawRecordTank(660, 360, Settings.CAMP_GRAY, g);
+        g.drawString(Record.enemyNumber + "", 700, 380);
 
         // Destroy the total number of enemies
-        g.drawString("Players Total grade count:", 60, 470);
-        g.drawString(Record.gradeCount + "", 250, 470);
+        g.drawString("Players current record:", 60, 470);
+        g.drawString(Record.currentRecord + "", 230, 470);
+        g.drawString("Players heigest record:", 260, 470);
+        g.drawString(Record.heightRecord + "", 430, 470);
 
     }
 
@@ -172,7 +177,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
     public void drawBomb(Graphics g) {
         for (Decoration decoration : decorations) {
             Bomb bomb = (Bomb) decoration;
-            if (!bomb.equals(null)
+            if (bomb != null
                     && bomb.isIsAlive()) {
                 if (bomb.getLife() > 6) {
                     g.drawImage(imageBombOne, bomb.getX(), bomb.getY(), 30, 30, this);
@@ -268,10 +273,10 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
 
     //Player contral keyboard
     @Override
-    public void keyPressed(KeyEvent e) {
+    public synchronized void keyPressed(KeyEvent e) {
         pressedKeyboard.add(e.getKeyCode());
         for (Integer keyboard : pressedKeyboard) {
-            //System.out.println(keyboard + "  " + pressedKeyboard.size());
+            // System.out.println(keyboard + "  " + pressedKeyboard.size()+" bullets size:"+bullets.size());
             Hero fisrtPlayer = (Hero) tanks.get(0);
             Hero secondPlayer = (Hero) tanks.get(1);
             switch (keyboard) {
@@ -332,128 +337,117 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public synchronized void keyReleased(KeyEvent e) {
+        //clean up
         pressedKeyboard.remove(e.getKeyCode());
     }
 
     //make Thread as a timer
     @Override
     public void run() {
-        try {
-            while (true) {
-                Thread.sleep(100);
-                //Collision detection shoot
-                for (int i = 0; i < bullets.size(); i++) {
-                    Bullet bullet = bullets.get(i);
-                    if (bullet.isIsAlive()) {
-                        for (int j = 0; j < tanks.size(); j++) {
-                            Tank tank = tanks.get(j);
-                            if (tank.isIsAlive()) {
-                                if (bullet.hitTankDetector(tank, bullet.getCamp())) {
-                                    decorations.add(new Bomb(tank.getX(), tank.getY(), Settings.ISALIVE_TRUE, Settings.DECORATION_LIFE));
-                                    if (tank.getCamp() == Settings.CAMP_GREEN) {
-                                        Record.reduceFirstPlayerHP();
-                                    }
-                                    if (tank.getCamp() == Settings.CAMP_YELLOW) {
-                                        Record.reduceSecondPlayerHP();
-                                    }
-                                    if (tank.getCamp() == Settings.CAMP_GRAY) {
-                                        Record.reduceEnemyNumber();
-                                        Record.addGradeCount();
-                                    }
+        while (true) {
+            Utils.delay(Settings.PAUSEFOR_100_MILLISECONDS);
+            //bullet's detection
+            for (int i = 0; i < bullets.size(); i++) {
+                Bullet bullet = bullets.get(i);
+                if (bullet.isIsAlive()) {
+                    for (int j = 0; j < tanks.size(); j++) {
+                        Tank tank = tanks.get(j);
+                        if (tank.isIsAlive()) {
+                            if (bullet.hitTankDetector(tank, bullet.getCamp())) {
+                                decorations.add(new Bomb(tank.getX(), tank.getY(), Settings.ISALIVE_TRUE, Settings.DECORATION_LIFE));
+                                if (tank.getCamp() == Settings.CAMP_GREEN) {
+                                    Record.reduceFirstPlayerHP();
+                                }
+                                if (tank.getCamp() == Settings.CAMP_YELLOW) {
+                                    Record.reduceSecondPlayerHP();
+                                }
+                                if (tank.getCamp() == Settings.CAMP_GRAY) {
+                                    Record.reduceEnemyNumber();
+                                    Record.addGradeCount();
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                // Clean up the battle field(reset Arraylist)
-                // maintain ArrayList using 0 and 1 are players,
-                for (int i = 2; i < tanks.size(); i++) {
-                    if (!tanks.get(i).isIsAlive()
-                            && !tanks.get(i).equals(null)) {
-                        tanks.remove(tanks.get(i));
-                    }
+            // Clean up the battle field(Maintain Arraylist)
+            // clean up list tanks. Except 0 and 1 (players),
+            for (int i = 2; i < tanks.size(); i++) {
+                if (!tanks.get(i).isIsAlive()
+                        && tanks.get(i) != null) {
+                    tanks.remove(tanks.get(i));
                 }
-                //clean up bullets
-                for (int i = 0; i < bullets.size(); i++) {
-                    if (!bullets.get(i).isIsAlive()
-                            && !bullets.get(i).equals(null)) {
-                        bullets.remove(bullets.get(i));
-                    }
+            }
+            //clean up list bullets
+            for (int i = 0; i < bullets.size(); i++) {
+                if (!bullets.get(i).isIsAlive()
+                        && bullets.get(i) != null) {
+                    bullets.remove(bullets.get(i));
                 }
-                //to decorations
-                for (int i = 0; i < decorations.size(); i++) {
-                    if (!decorations.get(i).isIsAlive()
-                            && !decorations.get(i).equals(null)) {
-                        decorations.remove(decorations.get(i));
-                    }
+            }
+            //clean up list decorations
+            for (int i = 0; i < decorations.size(); i++) {
+                if (!decorations.get(i).isIsAlive()
+                        && decorations.get(i) != null) {
+                    decorations.remove(decorations.get(i));
                 }
-                // End cleanup the battle field
+            }
+            // End cleanup the battle field
 
-                //collision detector
-                //*conditional statement can not redundant. it needs refresh.
-                //*must be use setCollision() only once
-                //between Players and to enemies
-                boolean sumCollisionFirst = false;
-                boolean sumCollisionSecond = false;
-                for (int i = 2; i < tanks.size(); i++) {
-                    Tank enemyTank = tanks.get(i);
-                    sumCollisionFirst = sumCollisionFirst || tanks.get(0).collisionDetector(enemyTank);
-                    sumCollisionSecond = sumCollisionSecond || tanks.get(1).collisionDetector(enemyTank);
+            //collision detector
+            //*conditional statement can not redundant. it needs refresh.
+            //*must be use setCollision() only once
+            //between Players and to enemies
+            boolean sumCollisionFirst = false;
+            boolean sumCollisionSecond = false;
+            for (int i = 2; i < tanks.size(); i++) {
+                Tank enemyTank = tanks.get(i);
+                sumCollisionFirst = sumCollisionFirst || tanks.get(0).collisionDetector(enemyTank);
+                sumCollisionSecond = sumCollisionSecond || tanks.get(1).collisionDetector(enemyTank);
+            }
+            if (tanks.get(1).isIsAlive()) {
+                sumCollisionFirst = sumCollisionFirst || tanks.get(0).collisionDetector(tanks.get(1));
+            }
+            if (tanks.get(0).isIsAlive()) {
+                sumCollisionSecond = sumCollisionSecond || tanks.get(1).collisionDetector(tanks.get(0));
+            }
+            tanks.get(0).setCollision(sumCollisionFirst);
+            tanks.get(1).setCollision(sumCollisionSecond);
+            //collision detector between enemies and to player
+            for (int i = 2; i < tanks.size(); i++) {
+                Tank tank = tanks.get(i);
+                boolean sumCollision = false;
+                for (int j = 2; j < tanks.size(); j++) {
+                    Tank anotherTank = tanks.get(j);
+                    //It's not itself
+                    if (!tank.equals(anotherTank)) {
+                        sumCollision = sumCollision
+                                || tank.collisionDetector(anotherTank);
+                    }
+                }
+                //to plays
+                if (tanks.get(0).isIsAlive()) {
+                    sumCollision = sumCollision || tank.collisionDetector(tanks.get(0));
                 }
                 if (tanks.get(1).isIsAlive()) {
-                    sumCollisionFirst = sumCollisionFirst || tanks.get(0).collisionDetector(tanks.get(1));
+                    sumCollision = sumCollision || tank.collisionDetector(tanks.get(1));
                 }
-                if (tanks.get(0).isIsAlive()) {
-                    sumCollisionSecond = sumCollisionSecond || tanks.get(1).collisionDetector(tanks.get(0));
-                }
-                tanks.get(0).setCollision(sumCollisionFirst);
-                tanks.get(1).setCollision(sumCollisionSecond);
-                //collision detector between enemies and to player
-                for (int i = 2; i < tanks.size(); i++) {
-                    Tank tank = tanks.get(i);
-                    boolean sumCollision = false;
-                    for (int j = 2; j < tanks.size(); j++) {
-                        Tank anotherTank = tanks.get(j);
-                        //It's not itself
-                        if (!tank.equals(anotherTank)) {
-                            sumCollision = sumCollision
-                                    || tank.collisionDetector(anotherTank);
-                        }
-                    }
-                    //to plays
-                    if (tanks.get(0).isIsAlive()) {
-                        sumCollision = sumCollision || tank.collisionDetector(tanks.get(0));
-                    }
-                    if (tanks.get(1).isIsAlive()) {
-                        sumCollision = sumCollision || tank.collisionDetector(tanks.get(1));
-                    }
-                    tank.setCollision(sumCollision ? true : false);
-                }
-                //end collision detector
-                //player life count
-                if (Record.firstPlayerHP > 0
-                        && !tanks.get(0).isIsAlive()) {
-                    tanks.get(0).setIsAlive(true);
-                }
-                if (Record.secondPlayerHP > 0
-                        && !tanks.get(1).isIsAlive()) {
-                    tanks.get(1).setIsAlive(true);
-                }
-                // Redraw
-                repaint();
+                tank.setCollision(sumCollision ? true : false);
             }
-        } catch (InterruptedException e) {
-            threadMessage("I wasn't done!");
+            //end collision detector
+            //player life count
+            if (Record.firstPlayerHP > 0
+                    && !tanks.get(0).isIsAlive()) {
+                tanks.get(0).setIsAlive(true);
+            }
+            if (Record.secondPlayerHP > 0
+                    && !tanks.get(1).isIsAlive()) {
+                tanks.get(1).setIsAlive(true);
+            }
+            // Redraw
+            repaint();
         }
-    }
-
-    public void threadMessage(String message) {
-        String threadName
-                = Thread.currentThread().getName();
-        System.out.format("%s: %s%n",
-                threadName,
-                message);
     }
 }

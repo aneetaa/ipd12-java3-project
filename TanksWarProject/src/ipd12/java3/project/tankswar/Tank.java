@@ -1,7 +1,6 @@
 package ipd12.java3.project.tankswar;
 
 import java.awt.Rectangle;
-import java.util.List;
 
 public class Tank {
 
@@ -31,30 +30,64 @@ public class Tank {
     }
 
     public void shoot() {
-        List<Bullet> bullets = GamePanel.bullets;
-        Bullet bullet;
-        switch (getDirection()) {
-            case Settings.NORTH:
-                bullet = new Bullet(x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2, y, Settings.NORTH, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
-                bullets.add(bullet);
-                new Thread(bullet).start();
+        final Object lock = new Object();
+        synchronized (lock) {
+            switch (getDirection()) {
+                case Settings.NORTH: {
+                    Bullet bullet = new Bullet(
+                            x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2,
+                            y,
+                            Settings.NORTH,
+                            Settings.ISALIVE_TRUE,
+                            Settings.BULLET_SPEED,
+                            this.camp);
+                    Thread thread = new Thread(bullet);
+                    thread.start();
+                    GamePanel.bullets.add(bullet);
+                }
                 break;
-            case Settings.SOUTH:
-                bullet = new Bullet(x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2, y + Settings.BLOODBATH_LONGITUDINAL_HEIGHT, Settings.SOUTH, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
-                bullets.add(bullet);
-                new Thread(bullet).start();
+                case Settings.SOUTH: {
+                    Bullet bullet = new Bullet(
+                            x + Settings.BLOODBATH_LONGITUDINAL_WIDTH / 2,
+                            y + Settings.BLOODBATH_LONGITUDINAL_HEIGHT,
+                            Settings.SOUTH,
+                            Settings.ISALIVE_TRUE,
+                            Settings.BULLET_SPEED,
+                            this.camp);
+                    Thread thread = new Thread(bullet);
+                    thread.start();
+                    GamePanel.bullets.add(bullet);
+                }
                 break;
-            case Settings.EAST:
-                bullet = new Bullet(x, y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2, Settings.EAST, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
-                bullets.add(bullet);
-                new Thread(bullet).start();
+                case Settings.EAST: {
+                    Bullet bullet = new Bullet(
+                            x,
+                            y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2,
+                            Settings.EAST,
+                            Settings.ISALIVE_TRUE,
+                            Settings.BULLET_SPEED,
+                            this.camp);
+                    Thread thread = new Thread(bullet);
+                    thread.start();
+                    GamePanel.bullets.add(bullet);
+                }
                 break;
-            case Settings.WEST:
-                bullet = new Bullet(x + Settings.BLOODBATH_HORIZONTAL_WIDTH, y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2, Settings.WEST, Settings.ISALIVE_TRUE, Settings.BULLET_SPEED, this.camp);
-                bullets.add(bullet);
-                new Thread(bullet).start();
+                case Settings.WEST: {
+                    Bullet bullet = new Bullet(
+                            x + Settings.BLOODBATH_HORIZONTAL_WIDTH,
+                            y + Settings.BLOODBATH_HORIZONTAL_HEIGHT / 2,
+                            Settings.WEST,
+                            Settings.ISALIVE_TRUE,
+                            Settings.BULLET_SPEED,
+                            this.camp);
+                    Thread thread = new Thread(bullet);
+                    thread.start();
+                    GamePanel.bullets.add(bullet);
+                }
                 break;
+            }
         }
+        // System.out.println(GamePanel.bullets.size());
     }
 
     // Collision between the tank
@@ -119,7 +152,7 @@ public class Tank {
             if (!isCollision()) {
                 setY(y - speed);
             } else if (y <= Settings.MAP_LOWER_RIGHT_CORNER_Y - Settings.BLOODBATH_LONGITUDINAL_HEIGHT) {
-                //solve collision "sticking" 95%  and in the corner sticker 5%
+                //solve collision "sticking" 85%  and in the corner sticker 5%
                 setY(y + speed);
             }
         }
@@ -196,7 +229,7 @@ public class Tank {
         return isAlive;
     }
 
-    public final void setIsAlive(boolean isAlive) {
+    public final synchronized void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
     }
 
@@ -204,7 +237,7 @@ public class Tank {
         return collision;
     }
 
-    public final void setCollision(boolean collision) {
+    public final synchronized void setCollision(boolean collision) {
         this.collision = collision;
     }
 
@@ -223,12 +256,12 @@ public class Tank {
     public final void setId(long id) {
         this.id = id;
     }
-    private long id;
-    private int x;
-    private int y;
-    private int direction;
-    private int speed;
-    private int camp;
+    private volatile long id;
+    private volatile int x;
+    private volatile int y;
+    private volatile int direction;
+    private volatile int speed;
+    private volatile int camp;
     private boolean isAlive;
     private boolean collision;
 }

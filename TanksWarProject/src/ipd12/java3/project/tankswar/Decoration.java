@@ -33,9 +33,9 @@ public class Decoration extends Object {
         this.isAlive = isAlive;
     }
 
-    private int x;
-    private int y;
-    private boolean isAlive;
+    private volatile int x;
+    private volatile int y;
+    private volatile boolean isAlive;
 }
 
 class Bomb extends Decoration {
@@ -61,5 +61,5 @@ class Bomb extends Decoration {
         this.life = life;
     }
 
-    private int life;
+    private volatile int life;
 }

@@ -5,8 +5,8 @@ public interface Settings {
     //game
     boolean CLOSE_THREAD_TRUE = true;
     boolean CLOSE_THREAD_FALSE = false;
-    int FIRST_PlAYER = 0;
-    int SECOND_PlAYER = 1;
+    int PLAYER_ONE_CODE = 0;
+    int PLAYER_TWO_CODE = 1;
 
     //The map
     int MAP_WIDTH = 600;
@@ -33,8 +33,8 @@ public interface Settings {
     int ENEMY_TANK_MOVESPEED = 2;
 
     //Thread setting
-    int PAUSEFOR_50_MILLISECONDS = 50;
-    int PAUSEFOR_100_MILLISECONDS = 100;
+    long PAUSEFOR_50_MILLISECONDS = 50;
+    long PAUSEFOR_100_MILLISECONDS = 100;
 
     //Camp
     int CAMP_GRAY = 0;
@@ -42,8 +42,9 @@ public interface Settings {
     int CAMP_YELLOW = 2;
 
     //Players
-    int PLAYER_NUNMBER = 1;
-    int PLAYER_TANK_MOVESPEED = 3;
+    int PLAYER_SINGLE = 1;
+    int PLAYER_DOUBLE = 2;
+    int PLAYER_TANK_MOVESPEED = Record.playerMoveSpeed;
     int PLAYER_TANK_X = 300;
     int PLAYER_TANK_Y = 220;
     int PLAYER_TANK_MAXSHOOT_BULLETS = 100;
@@ -59,7 +60,7 @@ public interface Settings {
     //bullet
     int BULLET_WIDTH = 2;
     int BULLET_HEIGHT = 2;
-    int BULLET_SPEED = 8;
+    int BULLET_SPEED = Record.playerBulletSpeed;
 
     //decoration
     int DECORATION_LIFE = 9;

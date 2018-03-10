@@ -36,7 +36,7 @@ public class Database {
         try (Statement stmt = dbConn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            System.out.println("Table established");
+            System.out.println("The DB tanks table established");
 
         }
     }
@@ -56,7 +56,7 @@ public class Database {
         try (Statement stmt = dbConn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            System.out.println("Table established");
+            System.out.println("The DB bullet table established");
 
         }
     }
@@ -115,6 +115,7 @@ public class Database {
             preparedStatement.setBoolean(6, tank.isIsAlive());
             preparedStatement.setBoolean(7, tank.isCollision());
             preparedStatement.executeUpdate();
+            System.out.printf("The %s tank add to DB.\n", tank.getClass().getName());
         }
     }
 
@@ -128,6 +129,7 @@ public class Database {
             preparedStatement.setInt(5, bullet.getCamp());
             preparedStatement.setBoolean(6, bullet.isIsAlive());
             preparedStatement.executeUpdate();
+            System.out.printf("The %s bullet add to DB.\n", bullet.getClass().getName());
         }
     }
 

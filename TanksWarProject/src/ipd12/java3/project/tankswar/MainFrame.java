@@ -2,18 +2,16 @@ package ipd12.java3.project.tankswar;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 public class MainFrame extends javax.swing.JFrame {
 
     Thread paintPanelThread;
-    GamePanel paintPanel;
+    GamePanel gamePanel;
     Database db;
     File f;
-    ArrayList<Tank> listTanks;
-    ArrayList<Bullet> listBullets;
+    File fHighestRecord;
 
     public MainFrame() {
 
@@ -21,11 +19,12 @@ public class MainFrame extends javax.swing.JFrame {
             this.db = new Database();
             initComponents();
             setIcon();
-            menuGame.setMnemonic('E');
+            menuGame.setMnemonic('G');
             menuExit.setMnemonic('E');
             menubarSetting.setMnemonic('S');
             menuSettings.setMnemonic('S');
             f = new File("src\\res\\", "gamelog.csv");
+            fHighestRecord = new File("src\\res\\", "highestRecord.csv");
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null,
@@ -48,25 +47,18 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         dlg = new javax.swing.JDialog();
-        dlg_cbTankMoveSpeed = new javax.swing.JComboBox<>();
-        dlg_cbEnemyMoveSpeed = new javax.swing.JComboBox<>();
-        dlg_cbBulletSpeed = new javax.swing.JComboBox<>();
+        dlg_cbPlayerMoveSpeed = new javax.swing.JComboBox<>();
+        dlg_cbPlayerBulletSpeed = new javax.swing.JComboBox<>();
         dlg_lblTankMoveSpeed = new javax.swing.JLabel();
         dlg_lblEnemyNumber = new javax.swing.JLabel();
         dlg_lblBulletSpeed = new javax.swing.JLabel();
-        dlg_tfEnemyNumber = new javax.swing.JTextField();
-        dlg_rbtSinglePlayer = new javax.swing.JRadioButton();
-        dlg_rbtDoublePlayer = new javax.swing.JRadioButton();
         dlg_lblPlayerOneName = new javax.swing.JLabel();
         dlg_lblPlayerTwoName = new javax.swing.JLabel();
         dlg_tfPlayer1Name = new javax.swing.JTextField();
         dlg_tfPlayer2Name = new javax.swing.JTextField();
         dlg_btCancel = new javax.swing.JButton();
         dlg_btSave = new javax.swing.JButton();
-        dlg_rbtNormalMode = new javax.swing.JRadioButton();
-        dlg_rbtOptionalMode = new javax.swing.JRadioButton();
-        dlg_lblSelectLevel = new javax.swing.JLabel();
-        dlg_gbtGameMode = new javax.swing.ButtonGroup();
+        dlg_cbEnemyNumber = new javax.swing.JComboBox<>();
         dlg_gbtSelectionMode = new javax.swing.ButtonGroup();
         pStart = new javax.swing.JPanel();
         btStartGame = new javax.swing.JButton();
@@ -76,7 +68,7 @@ public class MainFrame extends javax.swing.JFrame {
         menuGame = new javax.swing.JMenu();
         menuSave = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menuReplay = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         menuExit = new javax.swing.JMenuItem();
         menubarSetting = new javax.swing.JMenu();
@@ -85,11 +77,9 @@ public class MainFrame extends javax.swing.JFrame {
         dlg.setTitle("Setting game");
         dlg.setLocationByPlatform(true);
 
-        dlg_cbTankMoveSpeed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
+        dlg_cbPlayerMoveSpeed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", " " }));
 
-        dlg_cbEnemyMoveSpeed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", " " }));
-
-        dlg_cbBulletSpeed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
+        dlg_cbPlayerBulletSpeed.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
 
         dlg_lblTankMoveSpeed.setText("Tank  move speed:");
 
@@ -97,111 +87,80 @@ public class MainFrame extends javax.swing.JFrame {
 
         dlg_lblBulletSpeed.setText("Bullet speed:");
 
-        dlg_gbtGameMode.add(dlg_rbtSinglePlayer);
-        dlg_rbtSinglePlayer.setText("Single_Player");
-
-        dlg_gbtGameMode.add(dlg_rbtDoublePlayer);
-        dlg_rbtDoublePlayer.setText("Double_Player");
-
         dlg_lblPlayerOneName.setText("Palyer 1 name:");
 
         dlg_lblPlayerTwoName.setText("Player 2 name:");
 
         dlg_btCancel.setText("Cancel");
+        dlg_btCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dlg_btCancelActionPerformed(evt);
+            }
+        });
 
         dlg_btSave.setText("Save");
+        dlg_btSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dlg_btSaveActionPerformed(evt);
+            }
+        });
 
-        dlg_gbtSelectionMode.add(dlg_rbtNormalMode);
-        dlg_rbtNormalMode.setText("Normal Mode");
-
-        dlg_gbtSelectionMode.add(dlg_rbtOptionalMode);
-        dlg_rbtOptionalMode.setText("Optional Mode");
-
-        dlg_lblSelectLevel.setText("Select level:");
+        dlg_cbEnemyNumber.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" }));
 
         javax.swing.GroupLayout dlgLayout = new javax.swing.GroupLayout(dlg.getContentPane());
         dlg.getContentPane().setLayout(dlgLayout);
         dlgLayout.setHorizontalGroup(
             dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dlgLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(33, 33, 33)
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgLayout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(dlg_btCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(dlg_btSave, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(dlgLayout.createSequentialGroup()
+                            .addGap(13, 13, 13)
+                            .addComponent(dlg_lblTankMoveSpeed)
+                            .addGap(18, 18, 18)
+                            .addComponent(dlg_cbPlayerMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(dlgLayout.createSequentialGroup()
+                            .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(dlg_lblPlayerOneName)
+                                .addComponent(dlg_lblPlayerTwoName))
+                            .addGap(18, 18, 18)
+                            .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(dlg_tfPlayer2Name, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(dlg_tfPlayer1Name, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(dlgLayout.createSequentialGroup()
                             .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(dlgLayout.createSequentialGroup()
-                                    .addGap(13, 13, 13)
-                                    .addComponent(dlg_lblTankMoveSpeed)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(dlg_cbEnemyMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, dlgLayout.createSequentialGroup()
-                                        .addGap(36, 36, 36)
-                                        .addComponent(dlg_lblBulletSpeed)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(dlg_cbBulletSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, dlgLayout.createSequentialGroup()
-                                        .addComponent(dlg_lblEnemyNumber)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(dlg_tfEnemyNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, dlgLayout.createSequentialGroup()
-                                        .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(dlg_lblPlayerOneName)
-                                            .addComponent(dlg_lblPlayerTwoName))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(dlg_tfPlayer2Name, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(dlg_tfPlayer1Name, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addContainerGap(31, Short.MAX_VALUE))
-                        .addGroup(dlgLayout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dlg_btCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(dlg_btSave, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(dlgLayout.createSequentialGroup()
-                        .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(dlgLayout.createSequentialGroup()
-                                .addComponent(dlg_rbtSinglePlayer)
-                                .addGap(18, 18, 18)
-                                .addComponent(dlg_rbtDoublePlayer))
-                            .addGroup(dlgLayout.createSequentialGroup()
-                                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(dlg_rbtNormalMode)
-                                    .addComponent(dlg_lblSelectLevel))
-                                .addGap(18, 18, 18)
-                                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(dlg_rbtOptionalMode)
-                                    .addComponent(dlg_cbTankMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap(26, Short.MAX_VALUE))))
+                                    .addGap(36, 36, 36)
+                                    .addComponent(dlg_lblBulletSpeed))
+                                .addComponent(dlg_lblEnemyNumber))
+                            .addGap(18, 18, 18)
+                            .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(dlg_cbEnemyNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(dlg_cbPlayerBulletSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(20, 20, 20))
         );
         dlgLayout.setVerticalGroup(
             dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dlgLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(23, 23, 23)
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dlg_rbtSinglePlayer)
-                    .addComponent(dlg_rbtDoublePlayer))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dlg_rbtNormalMode)
-                    .addComponent(dlg_rbtOptionalMode))
-                .addGap(21, 21, 21)
-                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dlg_lblSelectLevel)
-                    .addComponent(dlg_cbTankMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dlg_cbEnemyMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dlg_cbPlayerMoveSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(dlg_lblTankMoveSpeed))
                 .addGap(30, 30, 30)
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dlg_cbBulletSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dlg_cbPlayerBulletSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(dlg_lblBulletSpeed))
                 .addGap(25, 25, 25)
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dlg_lblEnemyNumber)
-                    .addComponent(dlg_tfEnemyNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dlg_cbEnemyNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dlg_lblPlayerOneName)
@@ -214,7 +173,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(dlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dlg_btCancel)
                     .addComponent(dlg_btSave))
-                .addGap(44, 44, 44))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -289,8 +248,13 @@ public class MainFrame extends javax.swing.JFrame {
         menuGame.add(menuSave);
         menuGame.add(jSeparator1);
 
-        jMenuItem1.setText("Replay");
-        menuGame.add(jMenuItem1);
+        menuReplay.setText("Replay");
+        menuReplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuReplayActionPerformed(evt);
+            }
+        });
+        menuGame.add(menuReplay);
         menuGame.add(jSeparator2);
 
         menuExit.setText("Exit(Alt+E)");
@@ -324,8 +288,10 @@ public class MainFrame extends javax.swing.JFrame {
     private void btStartGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btStartGameActionPerformed
         // Goes to main page and start game
         try {
-            paintPanel = new GamePanel();
+            //Retrieve the record from file
             f.fileReader();
+            fHighestRecord.fileReaderHighestRecord();
+            gamePanel = new GamePanel();
         } catch (java.lang.IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this,
                     "The file can't find !" + e.getMessage(),
@@ -333,17 +299,18 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
-                    "The file read faild !" + ex.getMessage(),
+                    "The file write faild !" + ex.getMessage(),
                     "Error!",
                     JOptionPane.ERROR_MESSAGE);
+
         }
-        paintPanelThread = new Thread(paintPanel);
+        paintPanelThread = new Thread(gamePanel);
         paintPanelThread.start();
         setFocusable(true);
-        paintPanel.setBackground(java.awt.Color.white);
+        gamePanel.setBackground(java.awt.Color.white);
         this.remove(pStart);
-        this.add(paintPanel);
-        this.addKeyListener(paintPanel);
+        this.add(gamePanel);
+        this.addKeyListener(gamePanel);
         this.setVisible(true);
     }//GEN-LAST:event_btStartGameActionPerformed
 
@@ -356,10 +323,14 @@ public class MainFrame extends javax.swing.JFrame {
                 db.addTank(GamePanel.tanks.get(1));
             }
             for (int i = 2; i < GamePanel.tanks.size(); i++) {
-                db.addTank(GamePanel.tanks.get(i));
+                if (GamePanel.tanks.get(i).isIsAlive()) {
+                    db.addTank(GamePanel.tanks.get(i));
+                }
             }
-            for (Bullet bullet : GamePanel.bullets) {
-                db.addBullet(bullet);
+            for (int i = 0; i < GamePanel.bullets.size(); i++) {
+                if (GamePanel.bullets.get(i).isIsAlive()) {
+                    db.addBullet(GamePanel.bullets.get(i));
+                }
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
@@ -385,31 +356,82 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_menuExitActionPerformed
 
     private void formWindowDeactivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowDeactivated
-        try {
-            f.fileWriter();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "The file write faild !" + ex.getMessage(),
-                    "Error!",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        writerHighestRecord();
     }//GEN-LAST:event_formWindowDeactivated
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        writerHighestRecord();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void writerHighestRecord() {
         try {
-            f.fileWriter();
+            if (Record.heightRecord < Record.currentRecord) {
+                Record.heightRecord = Record.currentRecord;
+                fHighestRecord.fileWriterHighestRecord();
+            }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
                     "The file write faild !" + ex.getMessage(),
                     "Error!",
                     JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_formWindowClosing
-
+    }
     private void menuSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSettingsActionPerformed
         dlg.pack();
         dlg.setVisible(true);
     }//GEN-LAST:event_menuSettingsActionPerformed
+
+    private void menuReplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuReplayActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this,
+                "Replay last game in future ",
+                "Future plan",
+                JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_menuReplayActionPerformed
+
+    private void dlg_btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dlg_btCancelActionPerformed
+        dlg.setVisible(false);
+    }//GEN-LAST:event_dlg_btCancelActionPerformed
+
+    private void dlg_btSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dlg_btSaveActionPerformed
+        try {
+            int playerMoveSpeed = Integer.parseInt(dlg_cbPlayerMoveSpeed.getSelectedItem().toString());
+            int playerBulletSpeed = Integer.parseInt(dlg_cbPlayerBulletSpeed.getSelectedItem().toString());
+            int enemyNumber = Integer.parseInt(dlg_cbEnemyNumber.getSelectedItem().toString());
+            String playerOneName = dlg_tfPlayer1Name.getText();
+            String playerTwoName = dlg_tfPlayer2Name.getText();
+            if (playerOneName.length() < 1 || playerOneName.length() > 20) {
+                throw new IllegalArgumentException("player 1 Name must be between 1 and 20 character.");
+            }
+            if (playerTwoName.length() < 1 || playerTwoName.length() > 20) {
+                throw new IllegalArgumentException("player 2 Name must be between 1 and 20 character.");
+            }
+            f.fileWriter(playerMoveSpeed, playerBulletSpeed, enemyNumber, playerOneName, playerTwoName);
+            Object[] options = {"Restart", "Cancel"};
+            int decision = JOptionPane.showOptionDialog(this,
+                    "Are you sure you want to save Settings and Exit?\n",
+                    "Confirm Exit",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null, //do not use a custom Icon
+                    options, //the titles of buttons
+                    options[1]); //default button title
+            if (decision == JOptionPane.YES_OPTION) {
+                System.exit(0);
+                dlg.setVisible(false);
+            }
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Format error: can't : " + e.getMessage(),
+                    "Input error",
+                    JOptionPane.WARNING_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "The file write faild !" + ex.getMessage(),
+                    "Error!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_dlg_btSaveActionPerformed
 
     private void setIcon() {
         try {
@@ -465,32 +487,25 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JDialog dlg;
     private javax.swing.JButton dlg_btCancel;
     private javax.swing.JButton dlg_btSave;
-    private javax.swing.JComboBox<String> dlg_cbBulletSpeed;
-    private javax.swing.JComboBox<String> dlg_cbEnemyMoveSpeed;
-    private javax.swing.JComboBox<String> dlg_cbTankMoveSpeed;
-    private javax.swing.ButtonGroup dlg_gbtGameMode;
+    private javax.swing.JComboBox<String> dlg_cbEnemyNumber;
+    private javax.swing.JComboBox<String> dlg_cbPlayerBulletSpeed;
+    private javax.swing.JComboBox<String> dlg_cbPlayerMoveSpeed;
     private javax.swing.ButtonGroup dlg_gbtSelectionMode;
     private javax.swing.JLabel dlg_lblBulletSpeed;
     private javax.swing.JLabel dlg_lblEnemyNumber;
     private javax.swing.JLabel dlg_lblPlayerOneName;
     private javax.swing.JLabel dlg_lblPlayerTwoName;
-    private javax.swing.JLabel dlg_lblSelectLevel;
     private javax.swing.JLabel dlg_lblTankMoveSpeed;
-    private javax.swing.JRadioButton dlg_rbtDoublePlayer;
-    private javax.swing.JRadioButton dlg_rbtNormalMode;
-    private javax.swing.JRadioButton dlg_rbtOptionalMode;
-    private javax.swing.JRadioButton dlg_rbtSinglePlayer;
-    private javax.swing.JTextField dlg_tfEnemyNumber;
     private javax.swing.JTextField dlg_tfPlayer1Name;
     private javax.swing.JTextField dlg_tfPlayer2Name;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lblTankWar;
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuGame;
+    private javax.swing.JMenuItem menuReplay;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JMenuItem menuSettings;
     private javax.swing.JMenu menubarSetting;
